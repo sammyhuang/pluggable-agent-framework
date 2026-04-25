@@ -1,0 +1,23 @@
+## Tool Failure Recovery (UNIVERSAL — applies to every tool)
+
+When a tool call fails, **the user is waiting and the run timeout is ticking**. A bad
+recovery strategy can burn the entire `agents.defaults.timeoutSeconds` budget and abort
+the whole turn with no response delivered. Follow these rules for every tool, every time:
+
+1. **Never retry the exact same call after a failure.** If the call failed once, it will
+   fail again identically. Change at least one thing — narrower scope, different path,
+   different approach — before retrying.
+2. **Two failures of the same tool with the same intent = stop and surface.** Do not loop
+   a third time. Either pivot to a different approach or report the blockage to the user
+   in your reply.
+3. **Read the error message before retrying.** It usually tells you exactly what to change.
+   "edits[i] and edits[j] overlap" → split into single edits. "permission denied" → check
+   ownership. "no such file" → verify the path with `ls` first.
+4. **For HTTP / network tools (`curl` to external APIs):** read the status code.
+   - **4xx** → your request is malformed; fix it before retrying. Do not retry as-is.
+   - **5xx / connection timeout** → upstream issue; one retry with brief backoff is fine,
+     but stop after that and surface the problem.
+   - **Connection refused / DNS failure** → the target is down. Do not loop; surface.
+5. **Long-running `bash` commands:** if a command might take more than ~30s, prefer
+   running it in a way that you can interrupt or chunk. A hung shell command burns the
+   whole turn timeout silently.

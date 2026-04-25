@@ -1,0 +1,45 @@
+{
+  "id": "ace",
+  "runtime": "openclaw",
+  "version": "1.0.0",
+  "display_name": "ACE Development Team",
+  "description": "4-role team with coordinator, designer, developer, and tester",
+  "default_team_name": "ACE Team",
+  "changelog": [
+    { "version": "1.0.0", "date": "2026-03-31", "changes": "Initial release with expert versioning" }
+  ],
+  "agents": [
+    {
+      "id_suffix": "coordinator",
+      "expert_id": "coordinator",
+      "name": "Max",
+      "role": "Team Coordinator",
+      "description": "Orchestrates the team, manages tasks, routes work between teammates",
+      "is_master": true
+    },
+    {
+      "id_suffix": "designer",
+      "expert_id": "designer",
+      "name": "Ella",
+      "role": "UI/UX Designer",
+      "description": "Translates requirements into visual designs and interaction specs",
+      "is_master": false
+    },
+    {
+      "id_suffix": "developer",
+      "expert_id": "developer",
+      "name": "Jarvis",
+      "role": "Full-Stack Developer",
+      "description": "Implements frontend and backend features from designs and specs",
+      "is_master": false
+    },
+    {
+      "id_suffix": "tester",
+      "expert_id": "tester",
+      "name": "Kyle",
+      "role": "QA Engineer",
+      "description": "Independent quality guardian — validates every feature against requirements",
+      "is_master": false
+    }
+  ]
+}

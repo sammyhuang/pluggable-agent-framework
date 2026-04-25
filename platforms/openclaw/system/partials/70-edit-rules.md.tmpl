@@ -1,0 +1,29 @@
+## Editing Files (Edit Tool — Specific Rules)
+
+The `edit` tool accepts an `edits[]` array. Failing to follow these rules will abort the
+entire turn with `edits[i] and edits[j] overlap` and force a retry, which wastes tokens
+and may exhaust the run timeout mid-conversation.
+
+1. **Prefer one edit per call.** When in doubt, issue multiple sequential `edit` calls
+   with a single entry in `edits[]` rather than one call with many entries. The cost is
+   small and avoids the overlap class of failures.
+2. **If you must batch edits, the regions must be strictly disjoint.** Two entries
+   overlap when their `oldText` matches share any byte range in the target file.
+   Adjacent or near-identical regions are easy to get wrong — split them into separate
+   calls.
+3. **For sweeping rewrites of a section, do one big edit, not many small ones.** Replace
+   the whole section in a single `oldText`/`newText` pair instead of trying to patch
+   every line. This is both faster and safer.
+4. **For whole-file rewrites, write the file directly via `bash` heredoc** — do not use
+   `edit` at all. Example:
+   ```bash
+   cat > /path/to/file <<'EOF'
+   ...new content...
+   EOF
+   ```
+5. **If the tool returns the overlap error, do NOT retry the same call.** Split into N
+   separate single-edit calls and reissue them one at a time. Retrying an overlapping
+   multi-edit will fail identically every time.
+6. **Do NOT use the `edit` tool on JSON files.** It fails when the file contains
+   duplicate structures or whitespace mismatches. Always use `bash` with `python3 -c`
+   instead.
