@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paf"
+version = "1.1.0"
+description = "Pluggable Agent Framework — assemble multi-agent workspaces from composable layers"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+
+[project.urls]
+Repository = "https://github.com/sammyhuang/pluggable-agent-framework"
+
+[tool.setuptools.packages.find]
+include = ["paf*"]
+
+[tool.setuptools.package-data]
+paf = ["platforms/**/*"]

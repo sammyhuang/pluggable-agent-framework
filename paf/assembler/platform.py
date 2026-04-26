@@ -4,8 +4,8 @@ import json
 import os
 from typing import Optional
 
-_FRAMEWORK_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_PLATFORMS_DIR = os.path.join(_FRAMEWORK_ROOT, "platforms")
+_PAF_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_PLATFORMS_DIR = os.path.join(_PAF_ROOT, "platforms")
 
 
 def list_platforms() -> list[str]:
@@ -21,6 +21,15 @@ def list_platforms() -> list[str]:
 def get_platform_dir(platform_id: str) -> str:
     """Return absolute path to a platform directory."""
     return os.path.join(_PLATFORMS_DIR, platform_id)
+
+
+def get_platform_data_path(platform_id: str, *subpath: str) -> str:
+    """Return absolute path to a file within a platform's data directory.
+
+    Example:
+        get_platform_data_path("openclaw", "system", "USER.md.tmpl")
+    """
+    return os.path.join(_PLATFORMS_DIR, platform_id, *subpath)
 
 
 def load_platform(platform_id: str) -> dict:

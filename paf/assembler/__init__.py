@@ -8,7 +8,7 @@ from .expert_loader import (
     load_agent, list_agents, get_agent_dir,
     load_expert, list_experts, get_expert_dir,  # backward-compatible aliases
 )
-from .platform import load_platform, list_platforms
+from .platform import load_platform, list_platforms, get_platform_data_path
 from .team_loader import load_team, list_teams, get_team_agents_dict
 
 __all__ = [
@@ -22,6 +22,7 @@ __all__ = [
     "get_expert_dir", # alias for get_agent_dir
     "load_platform",
     "list_platforms",
+    "get_platform_data_path",
     "load_team",
     "list_teams",
     "get_team_agents_dict",
