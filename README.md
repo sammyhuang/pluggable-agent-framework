@@ -14,46 +14,73 @@ PAF solves this by introducing a clear boundary:
 - **Platform layer** — how the agent runs (specific to each runtime)
 - **Extension layer** — how the host application augments agents (collaboration, messaging, custom protocols)
 
+## Installation
+
+**From GitHub (pinned to a release tag):**
+
+```bash
+pip install "paf @ git+https://github.com/sammyhuang/pluggable-agent-framework.git@v1.1.0"
+```
+
+**From a local clone (editable / development mode):**
+
+```bash
+git clone https://github.com/sammyhuang/pluggable-agent-framework.git
+cd pluggable-agent-framework
+pip install -e .
+```
+
+**Verify:**
+
+```bash
+python -c "from paf import assemble_system_md; print('OK')"
+```
+
+Requires Python 3.11+.
+
 ## Architecture
 
 ```
 pluggable-agent-framework/
-├── agents/                           Agent definitions (recursive discovery)
+├── paf/                              Installable Python package
+│   ├── __init__.py                   Re-exports public API
+│   ├── assembler/                    Core library
+│   │   ├── assemble.py              Glob partials → render → concatenate
+│   │   ├── expert_loader.py         Load agent definitions with override fallback
+│   │   ├── platform.py              Discover and load platform configs
+│   │   └── team_loader.py           Load team templates
+│   └── platforms/                    Bundled platform definitions (shipped with package)
+│       └── openclaw/
+│           ├── runtime.json          Image, ports, volumes, env, reload strategy
+│           └── system/
+│               ├── partials/         Numbered system instruction fragments
+│               │   ├── 10-agent-header.md.tmpl
+│               │   ├── 20-team-directory.md.tmpl
+│               │   ├── 30-shared-dirs.md.tmpl
+│               │   ├── 60-tool-recovery.md.tmpl
+│               │   └── 70-edit-rules.md.tmpl
+│               └── USER.md.tmpl      Template for agent-maintained user notes
+│
+├── agents/                           Sample agent definitions (not shipped with package)
 │   ├── _skeleton/                    ← Copy this to create a new agent
 │   │   ├── agent.json               Metadata: name, role, description, version
-│   │   ├── IDENTITY.md               Who I am, what I do
-│   │   ├── SOUL.md                   Values, communication style
-│   │   └── MEMORY.md                 Initial memory scaffold
+│   │   ├── IDENTITY.md              Who I am, what I do
+│   │   ├── SOUL.md                  Values, communication style
+│   │   └── MEMORY.md                Initial memory scaffold
 │   └── sample/                       Example agents for reference
 │       ├── coordinator/
 │       ├── developer/
 │       ├── designer/
 │       └── tester/
 │
-├── teams/                            Team composition templates (recursive discovery)
+├── teams/                            Sample team templates (not shipped with package)
 │   ├── _skeleton/                    ← Copy this to create a new team
-│   │   ├── template.json             Agent roster, platform reference
-│   │   └── PURPOSE.md                Team mission and workflow
+│   │   ├── template.json            Agent roster, platform reference
+│   │   └── PURPOSE.md               Team mission and workflow
 │   └── sample/                       Example teams for reference
 │       └── ace/                      4-role development team
 │
-├── platforms/                        Platform-specific runtime definitions
-│   └── openclaw/
-│       ├── runtime.json              Image, ports, volumes, env, reload strategy
-│       └── system/
-│           ├── partials/             Numbered system instruction fragments
-│           │   ├── 10-agent-header.md.tmpl
-│           │   ├── 20-team-directory.md.tmpl
-│           │   ├── 30-shared-dirs.md.tmpl
-│           │   ├── 60-tool-recovery.md.tmpl
-│           │   └── 70-edit-rules.md.tmpl
-│           └── USER.md.tmpl          Template for agent-maintained user notes
-│
-└── assembler/                        Python library
-    ├── assemble.py                   Glob partials → render → concatenate
-    ├── expert_loader.py              Load agent definitions with override fallback
-    ├── platform.py                   Discover and load platform configs
-    └── team_loader.py                Load team templates
+└── pyproject.toml                    Package build configuration
 ```
 
 ## How It Works
@@ -81,7 +108,7 @@ Reference agents by ID in a team template:
   "id": "security-team",
   "runtime": "openclaw",
   "agents": [
-    { "id_suffix": "lead", "agent_id": "coordinator", "name": "Alex", "role": "Security Lead", "is_master": true },
+    { "id_suffix": "lead", "agent_id": "coordinator", "name": "Alex", "role": "Security Lead" },
     { "id_suffix": "auditor", "agent_id": "security-auditor", "name": "Sam", "role": "Security Auditor" }
   ]
 }
@@ -92,7 +119,7 @@ Reference agents by ID in a team template:
 The assembler combines agent definitions with platform system instructions:
 
 ```python
-from assembler import assemble_agent_workspace, load_team, get_team_agents_dict
+from paf import assemble_agent_workspace, load_team, get_team_agents_dict
 
 AGENTS_DIRS = ["/app/agents"]   # host app provides search paths
 TEAMS_DIRS  = ["/app/teams"]
