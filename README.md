@@ -16,10 +16,16 @@ PAF solves this by introducing a clear boundary:
 
 ## Installation
 
+**From PyPI:**
+
+```bash
+pip install pluggable-agent-framework
+```
+
 **From GitHub (pinned to a release tag):**
 
 ```bash
-pip install "paf @ git+https://github.com/sammyhuang/pluggable-agent-framework.git@v1.1.0"
+pip install "pluggable-agent-framework @ git+https://github.com/sammyhuang/pluggable-agent-framework.git@v1.1.0"
 ```
 
 **From a local clone (editable / development mode):**
