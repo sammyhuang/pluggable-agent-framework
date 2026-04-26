@@ -4,7 +4,6 @@
   "name": "Coordinator",
   "role": "Team Coordinator",
   "description": "Orchestrates the team, manages tasks, and routes work between teammates.",
-  "is_master": true,
   "changelog": [
     { "version": "1.0.0", "date": "2026-03-31", "changes": "Initial release" }
   ]

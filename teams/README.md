@@ -19,7 +19,7 @@ teams/
 2. Edit `template.json`:
    - Set a unique `id`, `display_name`, and `description`
    - Set `runtime` to your target platform (e.g., `"openclaw"`)
-   - Define the `agents` array — each entry references an `expert_id` from `agents/`
+   - Define the `agents` array — each entry references an `agent_id` from `agents/`
    - Mark exactly one agent as `"is_master": true` (receives user messages)
 3. Write `PURPOSE.md` — describe the team's mission and workflow
 
@@ -32,7 +32,7 @@ presence of `template.json`.
 | Field | Required | Description |
 |-------|----------|-------------|
 | `id_suffix` | yes | Unique suffix for the agent's container ID |
-| `expert_id` | yes | References an agent definition from `agents/` |
+| `agent_id` | yes | References an agent definition from `agents/` |
 | `name` | yes | Display name (used in team directory and prompts) |
 | `role` | yes | Role description |
 | `description` | no | What this agent does in the team |
@@ -42,5 +42,5 @@ presence of `template.json`.
 
 - **`id` must be unique** across all teams regardless of directory
 - **Exactly one `is_master: true` agent** per team
-- All `expert_id` values must resolve to an existing agent definition
+- All `agent_id` values must resolve to an existing agent definition
 - Directories starting with `_` are ignored by the framework

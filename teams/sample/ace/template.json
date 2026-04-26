@@ -11,7 +11,7 @@
   "agents": [
     {
       "id_suffix": "coordinator",
-      "expert_id": "coordinator",
+      "agent_id": "coordinator",
       "name": "Max",
       "role": "Team Coordinator",
       "description": "Orchestrates the team, manages tasks, routes work between teammates",
@@ -19,7 +19,7 @@
     },
     {
       "id_suffix": "designer",
-      "expert_id": "designer",
+      "agent_id": "designer",
       "name": "Ella",
       "role": "UI/UX Designer",
       "description": "Translates requirements into visual designs and interaction specs",
@@ -27,7 +27,7 @@
     },
     {
       "id_suffix": "developer",
-      "expert_id": "developer",
+      "agent_id": "developer",
       "name": "Jarvis",
       "role": "Full-Stack Developer",
       "description": "Implements frontend and backend features from designs and specs",
@@ -35,7 +35,7 @@
     },
     {
       "id_suffix": "tester",
-      "expert_id": "tester",
+      "agent_id": "tester",
       "name": "Kyle",
       "role": "QA Engineer",
       "description": "Independent quality guardian — validates every feature against requirements",

@@ -20,7 +20,7 @@ PAF solves this by introducing a clear boundary:
 pluggable-agent-framework/
 ├── agents/                           Agent definitions (recursive discovery)
 │   ├── _skeleton/                    ← Copy this to create a new agent
-│   │   ├── expert.json               Metadata: name, role, description, version
+│   │   ├── agent.json               Metadata: name, role, description, version
 │   │   ├── IDENTITY.md               Who I am, what I do
 │   │   ├── SOUL.md                   Values, communication style
 │   │   └── MEMORY.md                 Initial memory scaffold
@@ -51,7 +51,7 @@ pluggable-agent-framework/
 │
 └── assembler/                        Python library
     ├── assemble.py                   Glob partials → render → concatenate
-    ├── expert_loader.py              Load agent definitions with fallback
+    ├── expert_loader.py              Load agent definitions with override fallback
     ├── platform.py                   Discover and load platform configs
     └── team_loader.py                Load team templates
 ```
@@ -64,7 +64,7 @@ Copy `agents/_skeleton/` and fill in the files (see `agents/sample/` for example
 
 ```
 agents/my-group/security-auditor/
-├── expert.json        Metadata: id, version, name, role, description
+├── agent.json        Metadata: id, version, name, role, description
 ├── IDENTITY.md        "I am a security auditor. I review code for vulnerabilities..."
 ├── SOUL.md            "I am thorough but pragmatic. I prioritise impact over volume..."
 └── MEMORY.md          ""
@@ -81,8 +81,8 @@ Reference agents by ID in a team template:
   "id": "security-team",
   "runtime": "openclaw",
   "agents": [
-    { "id_suffix": "lead", "expert_id": "coordinator", "name": "Alex", "role": "Security Lead", "is_master": true },
-    { "id_suffix": "auditor", "expert_id": "security-auditor", "name": "Sam", "role": "Security Auditor" }
+    { "id_suffix": "lead", "agent_id": "coordinator", "name": "Alex", "role": "Security Lead", "is_master": true },
+    { "id_suffix": "auditor", "agent_id": "security-auditor", "name": "Sam", "role": "Security Auditor" }
   ]
 }
 ```
@@ -94,16 +94,20 @@ The assembler combines agent definitions with platform system instructions:
 ```python
 from assembler import assemble_agent_workspace, load_team, get_team_agents_dict
 
-team = load_team("security-team")
+AGENTS_DIRS = ["/app/agents"]   # host app provides search paths
+TEAMS_DIRS  = ["/app/teams"]
+
+team = load_team("security-team", teams_dirs=TEAMS_DIRS)
 team_agents = get_team_agents_dict(team)
 
 for agent_def in team["agents"]:
     assemble_agent_workspace(
         platform_id="openclaw",
-        expert_id=agent_def["expert_id"],
+        agent_id=agent_def["agent_id"],
         agent_name=agent_def["name"],
         agent_role=agent_def["role"],
         output_dir=f"/data/teams/my-team/agents/{agent_def['id_suffix']}",
+        agents_dirs=AGENTS_DIRS,
         team_agents=team_agents,
     )
 ```

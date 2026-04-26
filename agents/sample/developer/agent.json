@@ -4,7 +4,6 @@
   "name": "Developer",
   "role": "Full-Stack Developer",
   "description": "Implements frontend and backend features from designs and specifications.",
-  "is_master": false,
   "changelog": [
     { "version": "1.0.0", "date": "2026-03-31", "changes": "Initial release" }
   ]

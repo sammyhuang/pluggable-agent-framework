@@ -11,7 +11,7 @@
   "agents": [
     {
       "id_suffix": "lead",
-      "expert_id": "coordinator",
+      "agent_id": "coordinator",
       "name": "Agent Name",
       "role": "Agent Role",
       "description": "What this agent does in the team",
@@ -19,7 +19,7 @@
     },
     {
       "id_suffix": "worker",
-      "expert_id": "my-agent",
+      "agent_id": "my-agent",
       "name": "Agent Name",
       "role": "Agent Role",
       "description": "What this agent does in the team",

@@ -5,18 +5,17 @@ The assembler:
 2. Sorts globally by filename (numeric prefix determines order)
 3. Renders template variables ({agent_name}, {agent_role}, {team_table})
 4. Concatenates into a single SYSTEM.md
-5. Writes expert files (IDENTITY.md, SOUL.md, MEMORY.md) untouched
+5. Writes agent files (IDENTITY.md, SOUL.md, MEMORY.md) untouched
 
 Extension partials (e.g. notification protocol) are picked up automatically
 when their directory is listed in runtime.json extensions.partials_dirs.
 """
 
 import glob
-import json
 import os
 from typing import Optional
 
-from .expert_loader import load_expert
+from .expert_loader import load_agent
 from .platform import load_platform
 
 
@@ -108,13 +107,12 @@ def assemble_system_md(
     for path in partial_paths:
         with open(path, encoding="utf-8") as f:
             content = f.read()
-        # Render template variables. Use format_map to avoid KeyError on
-        # unrecognised placeholders (e.g. bash ${VAR} in examples).
         # Templates use {var} for substitutions and {{ / }} for literal braces.
+        # format_map raises KeyError on unrecognised placeholders (e.g. bash
+        # ${VAR}), so the try/except falls back to raw content on failure.
         try:
             rendered = content.format_map(template_vars)
         except (KeyError, ValueError):
-            # Fallback: skip rendering if template has incompatible placeholders
             rendered = content
         sections.append(rendered.strip())
 
@@ -123,59 +121,50 @@ def assemble_system_md(
 
 def assemble_agent_workspace(
     platform_id: str,
-    expert_id: str,
+    agent_id: str,
     agent_name: str,
     agent_role: str,
     output_dir: str,
-    agents_dirs: Optional[list[str]] = None,
+    agents_dirs: list[str],
     team_agents: Optional[dict] = None,
     extra_partials_dirs: Optional[list[str]] = None,
     extra_vars: Optional[dict] = None,
-    symlink_shared_partials: bool = False,
-    shared_system_dir: Optional[str] = None,
 ) -> dict:
     """Assemble a complete agent workspace directory.
 
-    Writes expert files (IDENTITY.md, SOUL.md, MEMORY.md) and the assembled
+    Writes agent files (IDENTITY.md, SOUL.md, MEMORY.md) and the assembled
     SYSTEM.md into output_dir.
 
     Args:
         platform_id: Platform identifier.
-        expert_id: Expert identifier.
+        agent_id: Agent identifier (references a directory under agents_dirs).
         agent_name: Agent display name.
         agent_role: Agent role description.
         output_dir: Absolute path to the agent workspace directory.
-        agents_dirs: List of directories to search for agent definitions.
-                     Required for expert loading.
+        agents_dirs: Directories to search for agent definitions.
         team_agents: Team roster for team directory partial.
         extra_partials_dirs: Additional partials directories.
         extra_vars: Additional template variables.
-        symlink_shared_partials: If True, static (no per-agent vars) partials
-            are symlinked from shared_system_dir instead of inlined.
-        shared_system_dir: Path to team shared system directory (container path)
-            for symlinking. Required when symlink_shared_partials=True.
 
     Returns:
         Dict with keys: identity, soul, memory, system (file contents written).
     """
-    if not agents_dirs:
-        raise ValueError("agents_dirs is required — provide directories containing agent definitions")
     rt = load_platform(platform_id)
     platform_dir = rt["_platform_dir"]
     files_cfg = rt.get("files", {})
 
-    # Load expert files (with platform override fallback)
-    expert = load_expert(expert_id, agents_dirs=agents_dirs, platform_dir=platform_dir)
+    # Load agent files (with platform override fallback)
+    agent = load_agent(agent_id, agents_dirs=agents_dirs, platform_dir=platform_dir)
 
     os.makedirs(output_dir, exist_ok=True)
 
-    # Write expert files — only if not already present (preserves agent edits)
-    expert_files = {
-        files_cfg.get("identity", "IDENTITY.md"): expert["identity"],
-        files_cfg.get("soul", "SOUL.md"): expert["soul"],
-        files_cfg.get("memory", "MEMORY.md"): expert["memory"],
+    # Write agent files — only if not already present (preserves agent edits)
+    agent_files = {
+        files_cfg.get("identity", "IDENTITY.md"): agent["identity"],
+        files_cfg.get("soul", "SOUL.md"): agent["soul"],
+        files_cfg.get("memory", "MEMORY.md"): agent["memory"],
     }
-    for filename, content in expert_files.items():
+    for filename, content in agent_files.items():
         filepath = os.path.join(output_dir, filename)
         if not os.path.exists(filepath):
             with open(filepath, "w", encoding="utf-8") as f:
@@ -205,8 +194,8 @@ def assemble_agent_workspace(
         f.write(system_content)
 
     return {
-        "identity": expert["identity"],
-        "soul": expert["soul"],
-        "memory": expert["memory"],
+        "identity": agent["identity"],
+        "soul": agent["soul"],
+        "memory": agent["memory"],
         "system": system_content,
     }

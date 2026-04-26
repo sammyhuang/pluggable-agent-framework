@@ -4,7 +4,6 @@
   "name": "Designer",
   "role": "UI/UX Designer",
   "description": "Translates requirements into visual designs, wireframes, and interaction specs.",
-  "is_master": false,
   "changelog": [
     { "version": "1.0.0", "date": "2026-03-31", "changes": "Initial release" }
   ]

@@ -4,7 +4,6 @@
   "name": "My Agent",
   "role": "Specialist Role",
   "description": "One-sentence description of what this agent does.",
-  "is_master": false,
   "changelog": [
     { "version": "1.0.0", "date": "YYYY-MM-DD", "changes": "Initial release" }
   ]

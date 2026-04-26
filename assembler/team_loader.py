@@ -7,7 +7,10 @@ skeletons (_skeleton/) and samples (sample/) for reference.
 """
 
 import json
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 
 def _walk_team_dirs(teams_dirs: list[str]) -> list[tuple[str, str]]:
@@ -15,15 +18,24 @@ def _walk_team_dirs(teams_dirs: list[str]) -> list[tuple[str, str]]:
 
     Skips directories whose name starts with '_' (skeletons/templates).
     Returns list of (team_id, absolute_path) tuples.
+    Warns on duplicate IDs — first occurrence wins.
     """
     results = []
+    seen: dict[str, str] = {}
     for base_dir in teams_dirs:
         if not os.path.isdir(base_dir):
             continue
         for root, dirs, files in os.walk(base_dir):
-            dirs[:] = [d for d in dirs if not d.startswith("_")]
+            dirs[:] = sorted(d for d in dirs if not d.startswith("_"))
             if "template.json" in files:
                 team_id = os.path.basename(root)
+                if team_id in seen:
+                    logger.warning(
+                        "Duplicate team id '%s': %s (keeping %s)",
+                        team_id, root, seen[team_id],
+                    )
+                    continue
+                seen[team_id] = root
                 results.append((team_id, root))
     return sorted(results, key=lambda x: x[0])
 
