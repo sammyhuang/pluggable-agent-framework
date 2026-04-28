@@ -1,0 +1,43 @@
+---
+title: "Custom Tab"
+requires: []                # add ${VAR} names here to gate visibility
+apis: {}                    # add per-API entries when you need live data
+---
+
+<!--
+================================================================================
+ui-extensions.md — minimal scaffold for a master/coordinator agent
+================================================================================
+This file activates an interactive tab on the host platform's dashboard.
+Rename it from `ui-extensions.md.example` to `ui-extensions.md` to enable.
+ONLY the team's master agent's copy is read; sub-agents are ignored.
+
+Frontmatter:
+  title:    Tab label in the host's navbar.
+  requires: List of ${VAR} names that must resolve for the tab to be visible.
+            (e.g. `[git_pat]` means a PAT must be configured before the tab
+            appears.) See agents/UI_EXTENSIONS.md for the resolution order.
+  apis:     Per-key API definitions. Each entry has `url`, `auth`, optional
+            `headers`, and `refresh` (seconds). Both `url` and `auth` accept
+            ${VAR} substitution; the proxy resolves these server-side.
+
+Body tokens (use inside the markdown body):
+  {{progress:open:closed[:label]}}              progress bar + stats line
+  {{apitable:api_key:col1,col2,...[:Heading]}}  table with optional "Heading (N)"
+  {{apilist:api_key:field[:Heading]}}           bullet list with optional "Heading (N)"
+
+Auto-rendered when the API row has these fields:
+  number       → `#NNN` prefix in muted monospace before the title
+  html_url     → small ↗ link icon opening the row in a new tab
+  open_issues + closed_issues → progress bar beneath the title cell (apitable)
+
+The renderer is a skeleton. Markdown headings, paragraphs, lists, <hr>, and
+the tokens above determine the entire visual flow — the host adds no card
+wrap or chrome. See agents/UI_EXTENSIONS.md for the full spec.
+================================================================================
+-->
+
+## Welcome
+
+Edit this file to define your dashboard tab. Replace this content with
+markdown plus the tokens listed above.
